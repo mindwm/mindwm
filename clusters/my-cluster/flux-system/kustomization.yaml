@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
 - gotk-components.yaml
 - gotk-sync.yaml
-  #- mindwm-namespace.yaml
+- helm-test
+- mindwm-namespace.yaml
