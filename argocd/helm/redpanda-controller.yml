@@ -6,12 +6,13 @@ metadata:
 spec:
   project: default
   source:
-    chart: redpanda
+    chart: redpanda-controller
     repoURL: https://charts.redpanda.com
     targetRevision: 5.7.37
     helm:
-      releaseName: redpanda
+      releaseName: redpanda-controller
   syncPolicy:
+    automated: {}
     syncOptions:
       - CreateNamespace=true
   destination:
