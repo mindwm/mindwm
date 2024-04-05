@@ -2,6 +2,7 @@ apiVersion: cluster.redpanda.com/v1alpha1
 kind: Topic
 metadata:
   name: contetx-teama-graph-events
+  namespace: redpanda
 spec:
   partitions: 1
   replicationFactor: 1
