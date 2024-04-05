@@ -11,6 +11,9 @@ spec:
     targetRevision: 1.14.4
     helm:
       releaseName: cert-manager
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
   destination:
     server: "https://kubernetes.default.svc"
     namespace: cert-manager
