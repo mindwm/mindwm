@@ -6,11 +6,11 @@ metadata:
 spec:
   project: default
   source:
-    chart: redpanda-controller
+    chart:  operator
     repoURL: https://charts.redpanda.com
-    targetRevision: 5.7.37
+    targetRevision: 0.4.20
     helm:
-      releaseName: redpanda-controller
+      releaseName: redpanda-operator
   syncPolicy:
     automated: {}
     syncOptions:
