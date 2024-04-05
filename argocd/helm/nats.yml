@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: redpanda
+  name: nats
   namespace: argocd
 spec:
   project: default
@@ -11,6 +11,33 @@ spec:
     targetRevision: 1.1.10
     helm:
       releaseName: nats
+      valuesObject:
+        config:
+          jetstream:
+            enabled: true
+          cluster:
+            merge:
+              name: nats-cluster
+          merge:
+            accounts:
+              root:
+                jetstream: enable
+                users:
+                  - user: root
+                    password: r00tpass
+              $SYS:
+                users:
+                  - user: sys
+                    password: pass
+        service:
+          ports:
+            cluster:
+              enabled: true
+        service:
+          merge:
+            spec:
+              type: NodePort
+
   syncPolicy:
     automated: {}
     syncOptions:
