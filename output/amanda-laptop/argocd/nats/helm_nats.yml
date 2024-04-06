@@ -28,8 +28,8 @@ spec:
               root:
                 jetstream: enable
                 users:
-                - name: root
-                  password: r00tpass
+                - password: r00tpass
+                  user: root
         service:
           merge:
             spec:
