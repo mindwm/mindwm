@@ -1,7 +1,21 @@
-let KubernetesNamespaceSchema = import "./namespace.yaml" in
-let KubernetesNamespace = fun namespace_name => KubernetesNamespaceSchema & {
-  metadata.name | force = namespace_name
-} in
+let k8s_schema = import "./schema.ncl" in
+let k8s_ns_model = import "./namespace.yaml" in
 {
-	make = KubernetesNamespace
+  KubernetesNamespaceSchema = {
+  	name
+	   | k8s_schema.KubernetesNamespace
+	   ,
+	serialize 
+	   | Dyn
+	   | optional	
+  },
+  make : k8s_schema.KubernetesNamespace -> KubernetesNamespaceSchema = fun namespace => KubernetesNamespaceSchema & {
+  	name | force = namespace,
+	serialize | force = {
+		"namespace/%{namespace}/ns.yml" = {
+			content = k8s_ns_model
+		}
+	}
+  } | KubernetesNamespaceSchema
+
 }
