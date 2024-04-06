@@ -34,6 +34,9 @@ let HelmChartName = std.contract.from_predicate(
     name
 	| HelmReleaseName
 	,
+    namespace
+        | k8s_schema.KubernetesNamespaceSchema
+	,
     chart
         | HelmChartSchema
         ,
@@ -50,20 +53,18 @@ let HelmChartName = std.contract.from_predicate(
 	| optional
 	| default = import "./k8s/namespace.ncl"
         ,
-    driver
+    helm_string
         | String
-        | optional
-	| default = "argocd"
-
   },
 
   make : k8s_schema.KubernetesNamespaceSchema -> HelmReleaseName -> HelmChartSchema -> Dyn -> HelmReleaseSchema = fun ns release_name _chart helm_values =>
     HelmReleaseSchema &
   	{
 		name | force = release_name,
+                namespace | force = ns,
 		chart = _chart,
 		values | force = helm_values,
-		driver | force = "argocd",
+		helm_string = "helm repo add %{release_name} %{_chart.repoUrl} && helm repo update && helm upgrade --install --namespace %{ns.name} --create-namespace %{release_name} %{release_name}/%{_chart.name}",
 		serialize | force = {
 		  "%{ns.name}/helm_%{name}.yml" = {
 			content = (std.serialize 'Yaml ((import "./_argocd/helm.yml") & {
