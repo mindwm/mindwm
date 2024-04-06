@@ -16,6 +16,14 @@ let env_config = import "./env_config.ncl" in
       version = "1.1.10"
     } | HelmChartSchema,
 
+    argocd_chart = {
+      name = "argo-cd",
+      repoUrl = "https://argoproj.github.io/argo-helm",
+      version = "3.35.4"
+    } | HelmChartSchema,
+
+    argocd = make_helm_release (make_k8s_ns "argocd") "argocd" argocd_chart {},
+
     resources = {
 
 	nats_ns = make_k8s_ns "nats",
@@ -52,6 +60,34 @@ let env_config = import "./env_config.ncl" in
   ) env.resources |> std.record.map_values (fun x => std.record.to_array x)
     |> std.record.values
      |> std.array.flatten |> std.array.map(fun x => std.record.update "field" ("output/" ++ env_config.name ++ "/" ++ x.field) x)
-       |> std.record.from_array,
+       |> std.record.from_array &
+   {
+	"output/%{env_config.name}/Makefile" = {
+		content = m%"
+create:
+	k3d cluster create %{env_config.name} --servers 1 --agents 1 --port 9080:80@loadbalancer --port 9443:443@loadbalancer --api-port 6443 --k3s-arg "traefik@server:0"
+delete:
+	k3d cluster delete %{env_config.name}
+argo_admin:
+       kubectl get secret -n %{env.argocd.namespace.name} argocd-initial-admin-secret -o jsonpath='{.data.password}'  |base64 -d;echo
+argocd:
+	%{env.argocd.helm_string} --wait
+	"%
+	},
+	"output/%{env_config.name}/argo_application.yaml " = {
+	  content = std.serialize 'Yaml (
+  	    (import "../argocd_application.yml") &
+              {
+                metadata.name | force = "%{env_config.name}",
+                metadata.namespace | force = "%{env.argocd.namespace.name}",
+		spec.source | force = {
+	 	  repoURL = "%{env_config.gitRepo}",
+	 	  path = "output/%{env_config.name}"
+		}
+ 	      }
+	    )
+	}
+   }
+
 
 }
