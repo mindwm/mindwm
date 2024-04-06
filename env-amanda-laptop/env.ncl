@@ -5,7 +5,7 @@ let env_config = import "./env_config.ncl" in
 {
   env | not_exported = {
     natsUserRoot = {
-      name = "root",
+      user = "root",
       password = "r00tpass"
     },
 
@@ -41,8 +41,8 @@ let env_config = import "./env_config.ncl" in
 	     "merge".accounts."$SYS" = {
                 users = [
 		  {
-		    "name" = "sys",
-                    "password" = "pass"
+		    user = "sys",
+                    password = "pass"
                   }
                 ]
              }

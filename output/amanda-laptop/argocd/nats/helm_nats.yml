@@ -23,13 +23,13 @@ spec:
             accounts:
               $SYS:
                 users:
-                - name: sys
-                  password: pass
+                - password: pass
+                  user: sys
               root:
                 jetstream: enable
                 users:
-                - name: root
-                  password: r00tpass
+                - password: r00tpass
+                  user: root
         service:
           merge:
             spec:
