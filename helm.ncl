@@ -1,5 +1,5 @@
 let k8s_schema = import "./k8s/namespace.ncl" in
-let env_config = import "./env_config.ncl" in
+#let env_config = import "./env_config.ncl" in
 let HelmReleaseName = std.contract.from_predicate(
   # https://github.com/helm/helm/blob/9a5eb70320c1c1b7b6f1c5a6f0f5420cb1c934a0/pkg/chartutil/validate_name.go#L55-L78
   let maxReleaseNameLen = "53" in

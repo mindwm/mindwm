@@ -7,7 +7,7 @@ delete:
 argocd: create
 	helm upgrade --install --namespace argocd --create-namespace argocd argo/argo-cd --wait
 regenerate-files:
-	git rm -rf $(OUTPUT_DIR)
+	test -d $(OUTPUT_DIR) && git rm -rf $(OUTPUT_DIR) || :
 	nix run .#regenerate-files
 	git add -A $(OUTPUT_DIR)
 	git commit --amend $(OUTPUT_DIR) --no-edit

@@ -12,7 +12,8 @@ let organist = inputs.organist in
   },
 
 
-  files = (import "./env.ncl").files
+  files = (import "./env-amanda-laptop/env.ncl").files &
+  	(import "./mindwm-dev1/env.ncl").files
 
 }
   | organist.OrganistExpression
