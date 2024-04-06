@@ -22,12 +22,17 @@ let env_config = import "./env_config.ncl" in
       version = "3.35.4"
     } | HelmChartSchema,
 
+    cert_manager = {
+      name = "cert-manager",
+      repoUrl = "https://charts.jetstack.io",
+      version = "1.14.4"
+    } | HelmChartSchema,
+
     argocd = make_helm_release (make_k8s_ns "argocd") "argocd" argocd_chart {},
 
     resources = {
 
 	nats_ns = make_k8s_ns "nats",
-
   	nats = make_helm_release nats_ns "nats" nats_chart  {
 	   config = {
 	     jetstream.enabled = true,
@@ -49,8 +54,11 @@ let env_config = import "./env_config.ncl" in
 	   },
            service.ports.cluster.enabled = true,
            service."merge".spec.type = "NodePort"
+  	},
+  	cert_manager = make_helm_release (make_k8s_ns "cert-manager") "cert-manager" cert_manager {
+	  installCRDs = true
+	}
 
-  	}
 
     }
   },

@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+spec:
+  destination:
+    namespace: cert-manager
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: cert-manager
+    helm:
+      releaseName: cert-manager
+      valuesObject:
+        installCRDs: true
+    repoURL: https://nats-io.github.io/k8s/helm/charts/
+    targetRevision: 1.1.10
+  syncPolicy:
+    automated: {}
+    syncOptions:
+    - CreateNamespace=true
