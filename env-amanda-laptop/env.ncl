@@ -41,7 +41,7 @@ let env_config = import "./env_config.ncl" in
 	     "merge".accounts."$SYS" = {
                 users = [
 		  {
-		    "user" = "sys",
+		    "name" = "sys",
                     "password" = "pass"
                   }
                 ]
@@ -82,8 +82,8 @@ argocd:
                 metadata.namespace | force = "%{env.argocd.namespace.name}",
 		spec.source | force = {
 		  directory = {
- 		     jsonnet: {},
-                     recurse: true
+ 		     jsonnet = {},
+                     recurse = true
                   },
 	 	  repoURL = "%{env_config.gitRepo}",
 	 	  path = "output/%{env_config.name}/argocd"

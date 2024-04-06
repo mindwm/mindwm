@@ -23,8 +23,8 @@ spec:
             accounts:
               $SYS:
                 users:
-                - password: pass
-                  user: sys
+                - name: sys
+                  password: pass
               root:
                 jetstream: enable
                 users:
