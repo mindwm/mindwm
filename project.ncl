@@ -1,6 +1,7 @@
 let inputs = import "./nickel.lock.ncl" in
 let organist = inputs.organist in
 let KubernetesNamespaceMake = (import "./k8s/namespace.ncl").make in
+let make_helm_release = (import "./helm.ncl).make in
 {
   shells = organist.shells.Bash,
 

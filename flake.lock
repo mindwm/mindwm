@@ -1,5 +1,23 @@
 {
   "nodes": {
+    "argocd": {
+      "flake": false,
+      "locked": {
+        "dir": "manifests/crds",
+        "lastModified": 1712263483,
+        "narHash": "sha256-iihJo+U5a7J0rbRA/KhTfWgio6GmGYUYq3tNTBKNvoM=",
+        "owner": "argoproj",
+        "repo": "argo-cd",
+        "rev": "040eb36740c18a93fcb37c783bb8faa75423889d",
+        "type": "github"
+      },
+      "original": {
+        "dir": "manifests/crds",
+        "owner": "argoproj",
+        "repo": "argo-cd",
+        "type": "github"
+      }
+    },
     "fenix": {
       "inputs": {
         "nixpkgs": "nixpkgs",
@@ -137,6 +155,7 @@
     },
     "root": {
       "inputs": {
+        "argocd": "argocd",
         "fenix": "fenix",
         "nixpkgs": "nixpkgs_2",
         "organist": "organist"
