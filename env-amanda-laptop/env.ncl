@@ -22,7 +22,7 @@ let env_config = import "./env_config.ncl" in
       version = "3.35.4"
     } | HelmChartSchema,
 
-    cert_manager = {
+    cert_manager_chart = {
       name = "cert-manager",
       repoUrl = "https://charts.jetstack.io",
       version = "1.14.4"
@@ -55,7 +55,7 @@ let env_config = import "./env_config.ncl" in
            service.ports.cluster.enabled = true,
            service."merge".spec.type = "NodePort"
   	},
-  	cert_manager = make_helm_release (make_k8s_ns "cert-manager") "cert-manager" cert_manager {
+  	cert_manager = make_helm_release (make_k8s_ns "cert-manager") "cert-manager" cert_manager_chart {
 	  installCRDs = true
 	}
 
