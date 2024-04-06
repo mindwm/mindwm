@@ -8,5 +8,10 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
+    directory:
+      jsonnet: {}
+      recurse: true
     path: output/amanda-laptop/argocd
     repoURL: https://github.com/metacoma/mindwm-laptop
+  syncPolicy:
+    automated: {}

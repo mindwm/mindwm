@@ -81,6 +81,10 @@ argocd:
                 metadata.name | force = "%{env_config.name}",
                 metadata.namespace | force = "%{env.argocd.namespace.name}",
 		spec.source | force = {
+		  directory = {
+ 		     jsonnet: {},
+                     recurse: true
+                  },
 	 	  repoURL = "%{env_config.gitRepo}",
 	 	  path = "output/%{env_config.name}/argocd"
 		},
