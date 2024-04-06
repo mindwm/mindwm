@@ -8,5 +8,5 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: output/amanda-laptop
+    path: output/amanda-laptop/argocd
     repoURL: https://github.com/metacoma/mindwm-laptop

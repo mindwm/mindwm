@@ -83,7 +83,8 @@ argocd:
 		spec.source | force = {
 	 	  repoURL = "%{env_config.gitRepo}",
 	 	  path = "output/%{env_config.name}"
-		}
+		},
+		spec.syncPolicy.automated | force = {}
  	      }
 	    )
 	}
