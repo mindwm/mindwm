@@ -8,6 +8,7 @@ let HelmReleaseName = std.contract.from_predicate(
 let HelmReleaseVersion = std.contract.from_predicate(
   fun value => std.string.is_match("^v\\d+\\.\\d+\\.\\d+$") value
 ) in
+let HelmChartVersion = HelmReleaseVersion in
 let HelmChartName = std.contract.from_predicate(
   fun value => std.string.is_match("^[a-zA-Z0-9]+(?:[-.][a-zA-Z0-9]+)*$") value
 ) in
@@ -17,16 +18,25 @@ let HelmChartName = std.contract.from_predicate(
         | Bool
         | default = true
   },
-  HelmReleaseSchema = {
-    chart
-	| HelmChartName
-    	,
+
+  HelmChartSchema = {
+    name
+       | HelmChartName
+       ,
+    repoUrl
+       | String
+       ,
     version
-        | HelmReleaseVersion
-	,
+       | HelmChartVersion
+  },
+
+  HelmReleaseSchema = {
     name
 	| HelmReleaseName
 	,
+    chart
+        | HelmChartSchema
+        ,
     options
         | HelmReleaseOptionsSchema
 	| optional
@@ -47,21 +57,20 @@ let HelmChartName = std.contract.from_predicate(
 
   },
 
-  make : k8s_schema.KubernetesNamespaceSchema -> HelmReleaseName -> HelmChartName -> String -> Dyn -> HelmReleaseSchema = fun ns release_name chart_name helm_version helm_values =>
+  make : k8s_schema.KubernetesNamespaceSchema -> HelmReleaseName -> HelmChartSchema -> Dyn -> HelmReleaseSchema = fun ns release_name _chart helm_values =>
     HelmReleaseSchema &
   	{
 		name | force = release_name,
-     		chart | force = chart_name,
-     		version | force = ("v" ++ helm_version),
+		chart = _chart,
 		values | force = helm_values,
 		driver | force = "argocd",
 		serialize | force = {
-		  "%{name}_helm_chart.yml" = {
+		  "%{ns.name}/helm_%{name}.yml" = {
 			content = if env_config.serializer == "argocd" then (std.serialize 'Yaml ((import "./_argocd/helm.yml") & {
 
 				metadata.name | force = name,
 				spec.destination.namespace | force = ns.name,
-			 	spec.source.chart | force = chart_name,
+			 	spec.source.chart | force = _chart.name,
 			 	spec.source.helm.releaseName | force = release_name,
 				spec.source.helm.valuesObject | force = helm_values,
 				spec.syncPolicy.syncOptions | force = [
