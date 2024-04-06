@@ -18,20 +18,4 @@
 
   outputs = {organist, ...} @ inputs:
     organist.flake.outputsFromNickel ./. inputs {};
- in
-    {
-      templates.default = {
-        path = ./templates/default;
-        description = "A devshell using nickel.";
-        welcomeText = ''
-          You have just created an _Organist_-powered development shell.
-
-          - Enter the environment with `nix develop`
-          - Tweak it by modifying `project.ncl`
-
-          _Hint_: To be able to leverage the Nickel language server for instant feedback on your configuration, run `nix run .#regenerate-lockfile` first.
-        '';
-      };
-    };
-
 }
