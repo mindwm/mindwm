@@ -1,6 +1,7 @@
-let make_helm_release = (import "./helm.ncl").make in
-let HelmChartSchema = (import "./helm.ncl").HelmChartSchema in
-let make_k8s_ns = (import "./k8s/namespace.ncl").make in
+let make_helm_release = (import "../helm.ncl").make in
+let HelmChartSchema = (import "../helm.ncl").HelmChartSchema in
+let make_k8s_ns = (import "../k8s/namespace.ncl").make in
+let env_config = import "./env_config.ncl" in
 {
   env | not_exported = {
     natsUserRoot = {
@@ -48,7 +49,9 @@ let make_k8s_ns = (import "./k8s/namespace.ncl").make in
 
   files = std.record.map (
        fun s x => x.serialize
-  ) env.resources |> std.record.map_values (fun x => std.record.to_array x) |> std.record.values |> std.array.flatten |> std.record.from_array
-
+  ) env.resources |> std.record.map_values (fun x => std.record.to_array x)
+    |> std.record.values
+     |> std.array.flatten |> std.array.map(fun x => std.record.update "field" ("output/" ++ env_config.name ++ "/" ++ x.field) x)
+       |> std.record.from_array,
 
 }

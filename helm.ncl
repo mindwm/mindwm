@@ -1,5 +1,5 @@
 let k8s_schema = import "./k8s/namespace.ncl" in
-let env_config = import "./env_config.ncl" in
+#let env_config = import "./env_config.ncl" in
 let HelmReleaseName = std.contract.from_predicate(
   # https://github.com/helm/helm/blob/9a5eb70320c1c1b7b6f1c5a6f0f5420cb1c934a0/pkg/chartutil/validate_name.go#L55-L78
   let maxReleaseNameLen = "53" in
@@ -34,6 +34,9 @@ let HelmChartName = std.contract.from_predicate(
     name
 	| HelmReleaseName
 	,
+    namespace
+        | k8s_schema.KubernetesNamespaceSchema
+	,
     chart
         | HelmChartSchema
         ,
@@ -50,23 +53,21 @@ let HelmChartName = std.contract.from_predicate(
 	| optional
 	| default = import "./k8s/namespace.ncl"
         ,
-    driver
+    helm_string
         | String
-        | optional
-	| default = "argocd"
-
   },
 
   make : k8s_schema.KubernetesNamespaceSchema -> HelmReleaseName -> HelmChartSchema -> Dyn -> HelmReleaseSchema = fun ns release_name _chart helm_values =>
     HelmReleaseSchema &
   	{
 		name | force = release_name,
+                namespace | force = ns,
 		chart = _chart,
 		values | force = helm_values,
-		driver | force = "argocd",
+		helm_string = "helm repo add %{release_name} %{_chart.repoUrl} && helm repo update && helm upgrade --install --namespace %{ns.name} --create-namespace %{release_name} %{release_name}/%{_chart.name}",
 		serialize | force = {
 		  "%{ns.name}/helm_%{name}.yml" = {
-			content = if env_config.serializer == "argocd" then (std.serialize 'Yaml ((import "./_argocd/helm.yml") & {
+			content = (std.serialize 'Yaml ((import "./_argocd/helm.yml") & {
 
 				metadata.name | force = name,
 				spec.destination.namespace | force = ns.name,
@@ -77,7 +78,7 @@ let HelmChartName = std.contract.from_predicate(
 				   "CreateNamespace=" ++ std.to_string HelmReleaseOptionsSchema.create_namespace
 				]
 
-			})) else {}
+			}))
 		  }
 		}
   	} | HelmReleaseSchema
