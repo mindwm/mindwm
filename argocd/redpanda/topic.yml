@@ -1,0 +1,17 @@
+apiVersion: cluster.redpanda.com/v1alpha1
+kind: Topic
+metadata:
+  name: context-teama-graph-events
+  namespace: redpanda
+spec:
+  partitions: 1
+  replicationFactor: 1
+  additionalConfig:
+    cleanup.policy: "compact"
+  kafkaApiSpec:
+    brokers:
+      - "neo4j-cdc-stream.redpanda.svc.cluster.local:9093"
+#    tls:
+#      caCertSecretRef:
+#        name: "cluster2-default-cert"
+#        key: "ca.crt"

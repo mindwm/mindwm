@@ -4,4 +4,4 @@ metadata:
   labels:
     kubernetes.io/metadata.name: mindwm
     name: mindwm
-  name: mindw
+  name: mindwm
