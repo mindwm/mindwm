@@ -1,6 +1,5 @@
 let inputs = import "./nickel.lock.ncl" in
 let organist = inputs.organist in
-let KubernetesNamespaceMake = (import "./k8s/namespace.ncl").make in
 {
   shells = organist.shells.Bash,
 
@@ -13,14 +12,7 @@ let KubernetesNamespaceMake = (import "./k8s/namespace.ncl").make in
   },
 
 
-  files = {
-  	"clusters/metacoma-laptop/resources/test-namespace.yaml" = {
-		content = std.serialize 'Yaml (KubernetesNamespaceMake "test")
-	},
-  	"clusters/metacoma-laptop/resources/foobar-namespace.yaml" = {
-		content = std.serialize 'Yaml (KubernetesNamespaceMake "foobar")
-	},
-  }
+  files = (import "env.ncl").files
 
 }
   | organist.OrganistExpression
