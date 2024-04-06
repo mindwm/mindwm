@@ -12,7 +12,7 @@ let organist = inputs.organist in
   },
 
 
-  files = (import "env.ncl").files
+  files = (import "./env.ncl").files
 
 }
   | organist.OrganistExpression

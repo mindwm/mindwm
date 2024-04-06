@@ -66,7 +66,7 @@ let HelmChartName = std.contract.from_predicate(
 		driver | force = "argocd",
 		serialize | force = {
 		  "%{ns.name}/helm_%{name}.yml" = {
-			content = if env_config.serializer == "argocd" then (std.serialize 'Yaml ((import "./_argocd/helm.yml") & {
+			content = (std.serialize 'Yaml ((import "./_argocd/helm.yml") & {
 
 				metadata.name | force = name,
 				spec.destination.namespace | force = ns.name,
@@ -77,7 +77,7 @@ let HelmChartName = std.contract.from_predicate(
 				   "CreateNamespace=" ++ std.to_string HelmReleaseOptionsSchema.create_namespace
 				]
 
-			})) else {}
+			}))
 		  }
 		}
   	} | HelmReleaseSchema
