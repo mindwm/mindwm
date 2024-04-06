@@ -59,7 +59,7 @@ let env_config = import "./env_config.ncl" in
        fun s x => x.serialize
   ) env.resources |> std.record.map_values (fun x => std.record.to_array x)
     |> std.record.values
-     |> std.array.flatten |> std.array.map(fun x => std.record.update "field" ("output/" ++ env_config.name ++ "/" ++ x.field) x)
+     |> std.array.flatten |> std.array.map(fun x => std.record.update "field" ("output/" ++ env_config.name ++ "/argocd/" ++ x.field) x)
        |> std.record.from_array &
    {
 	"output/%{env_config.name}/Makefile" = {
@@ -82,7 +82,7 @@ argocd:
                 metadata.namespace | force = "%{env.argocd.namespace.name}",
 		spec.source | force = {
 	 	  repoURL = "%{env_config.gitRepo}",
-	 	  path = "output/%{env_config.name}"
+	 	  path = "output/%{env_config.name}/argocd"
 		},
 		spec.syncPolicy.automated | force = {}
  	      }
