@@ -2,10 +2,16 @@ let make_helm_release = (import "../helm.ncl").make in
 let HelmChartSchema = (import "../helm.ncl").HelmChartSchema in
 let make_k8s_ns = (import "../k8s/namespace.ncl").make in
 let env_config = import "./env_config.ncl" in
+let argocd = import "../argocd/argocd.ncl" in
 {
   env | not_exported = {
     istioRepoURL = "https://istio-release.storage.googleapis.com/charts",
     istioVersion = "1.21.0",
+
+    infraRepo = {
+      repo = "https://github.com/metacoma/mindwm-laptop",
+      path = "infrastructure/"
+    } | argocd.ArgoCdSchemas.Source,
 
     natsUserRoot = {
       user = "root",
@@ -57,9 +63,10 @@ let env_config = import "./env_config.ncl" in
 
 
 
-    argocd = make_helm_release (make_k8s_ns "argocd") "argocd" argocd_chart {},
+    argocd_release = make_helm_release (make_k8s_ns "argocd") "argocd" argocd_chart {},
 
     resources = {
+	argocd_infra = argocd.make_app "infra" infraRepo,
 
 	nats_ns = make_k8s_ns "nats",
   	nats = make_helm_release nats_ns "nats" nats_chart  {
@@ -118,9 +125,9 @@ create:
 delete:
 	k3d cluster delete %{env_config.name}
 argo_admin:
-	kubectl get secret -n %{env.argocd.namespace.name} argocd-initial-admin-secret -o jsonpath='{.data.password}'  |base64 -d;echo
+	kubectl get secret -n %{env.argocd_release.namespace.name} argocd-initial-admin-secret -o jsonpath='{.data.password}'  |base64 -d;echo
 argocd:
-	%{env.argocd.helm_string} --wait
+	%{env.argocd_release.helm_string} --wait
 	"%
 	},
 	"output/%{env_config.name}/argo_application.yaml " = {
@@ -128,7 +135,7 @@ argocd:
   	    (import "../argocd_application.yml") &
               {
                 metadata.name | force = "%{env_config.name}",
-                metadata.namespace | force = "%{env.argocd.namespace.name}",
+                metadata.namespace | force = "%{env.argocd_release.namespace.name}",
 		spec.source | force = {
 		  directory = {
  		     jsonnet = {},
