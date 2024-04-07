@@ -77,7 +77,7 @@ create:
 delete:
 	k3d cluster delete %{env_config.name}
 argo_admin:
-       kubectl get secret -n %{env.argocd.namespace.name} argocd-initial-admin-secret -o jsonpath='{.data.password}'  |base64 -d;echo
+	kubectl get secret -n %{env.argocd.namespace.name} argocd-initial-admin-secret -o jsonpath='{.data.password}'  |base64 -d;echo
 argocd:
 	%{env.argocd.helm_string} --wait
 	"%
