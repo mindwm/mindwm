@@ -3,6 +3,6 @@ create:
 delete:
 	k3d cluster delete amanda-laptop
 argo_admin:
-	kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath='{.data.password}'  |base64 -d;echo
+	kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.password}"  |base64 -d;echo
 argocd:
 	helm repo add argocd https://argoproj.github.io/argo-helm && helm repo update && helm upgrade --install --namespace argocd --create-namespace argocd argocd/argo-cd --wait

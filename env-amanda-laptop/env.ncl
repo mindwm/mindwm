@@ -2,6 +2,7 @@ let make_helm_release = (import "../helm.ncl").make in
 let HelmChartSchema = (import "../helm.ncl").HelmChartSchema in
 let make_k8s_ns = (import "../k8s/namespace.ncl").make in
 let env_config = import "./env_config.ncl" in
+let ArgoCdSchemas = (import "../argocd/schema.ncl").ArgoCdSchemas in
 let argocd = import "../argocd/argocd.ncl" in
 {
   env | not_exported = {
@@ -11,7 +12,7 @@ let argocd = import "../argocd/argocd.ncl" in
     infraRepo = {
       repo = "https://github.com/metacoma/mindwm-laptop",
       path = "infrastructure/"
-    } | argocd.ArgoCdSchemas.Source,
+    } | ArgoCdSchemas.Source,
 
     natsUserRoot = {
       user = "root",
@@ -125,7 +126,7 @@ create:
 delete:
 	k3d cluster delete %{env_config.name}
 argo_admin:
-	kubectl get secret -n %{env.argocd_release.namespace.name} argocd-initial-admin-secret -o jsonpath='{.data.password}'  |base64 -d;echo
+	kubectl get secret -n %{env.argocd_release.namespace.name} argocd-initial-admin-secret -o jsonpath="{.data.password}"  |base64 -d;echo
 argocd:
 	%{env.argocd_release.helm_string} --wait
 	"%
