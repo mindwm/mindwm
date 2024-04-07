@@ -28,6 +28,12 @@ let env_config = import "./env_config.ncl" in
       version = "1.14.4"
     } | HelmChartSchema,
 
+    redpanda_operator_chart = {
+      name = "operator",
+      repoUrl = "https://charts.redpanda.com",
+      version = "0.4.20"
+    } | HelmChartSchema,
+
     argocd = make_helm_release (make_k8s_ns "argocd") "argocd" argocd_chart {},
 
     resources = {
@@ -55,9 +61,12 @@ let env_config = import "./env_config.ncl" in
            service.ports.cluster.enabled = true,
            service."merge".spec.type = "NodePort"
   	},
+
   	cert_manager = make_helm_release (make_k8s_ns "cert-manager") "cert-manager" cert_manager_chart {
 	  installCRDs = true
 	}
+
+  	redpanda_operator = make_helm_release (make_k8s_ns "redpanda") "redpanda-operator" redpanda_operator_chart {}
 
 
     }
