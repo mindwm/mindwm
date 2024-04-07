@@ -67,7 +67,7 @@ let HelmChartName = std.contract.from_predicate(
 		helm_string = "helm repo add %{release_name} %{_chart.repoUrl} && helm repo update && helm upgrade --install --namespace %{ns.name} --create-namespace %{release_name} %{release_name}/%{_chart.name}",
 		serialize | force = {
 		  "%{ns.name}/helm_%{name}.yml" = {
-			content = (std.serialize 'Yaml ((import "./_argocd/helm.yml") & {
+			content = (std.serialize 'Yaml ((import "./argocd/helm.yml") & {
 
 				metadata.name | force = name,
 				spec.destination.namespace | force = ns.name,
