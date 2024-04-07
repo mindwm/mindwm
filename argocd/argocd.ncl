@@ -5,7 +5,7 @@ let default_project = "default" in
 let default_server = "https://kubernetes.default.svc" in
 let ArgoCdSchemas = (import "./schema.ncl").ArgoCdSchemas in
 {
-  make_app : KubernetesSchema.KubernetesResourceName -> ArgoCdSchemas.Source -> ArgoCdSchemas.IgnoreDifference -> ArgoCdSchemas.Application =
+  make_app : KubernetesSchema.KubernetesResourceName -> ArgoCdSchemas.Source -> ArgoCdSchemas.Application =
     fun app_name app_source => ArgoCdSchemas.Application & {
       name = app_name,
       namespace = ArgoCdSchemas.Application.namespace,

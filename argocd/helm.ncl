@@ -1,4 +1,5 @@
-let k8s_schema = import "./k8s/namespace.ncl" in
+let k8s_schema = import "../k8s/namespace.ncl" in
+let ArgoCdSchemas = (import "./schema.ncl").ArgoCdSchemas in
 #let env_config = import "./env_config.ncl" in
 let HelmReleaseName = std.contract.from_predicate(
   # https://github.com/helm/helm/blob/9a5eb70320c1c1b7b6f1c5a6f0f5420cb1c934a0/pkg/chartutil/validate_name.go#L55-L78
@@ -45,13 +46,17 @@ let HelmChartName = std.contract.from_predicate(
 	| optional
 	| default = { create_namespace = true }
         ,
+    ignore
+        | Array ArgoCdSchemas.IgnoreDifference
+	| optional
+        ,
     values
         | Dyn
         ,
     serialize
     	| Dyn
 	| optional
-	| default = import "./k8s/namespace.ncl"
+	| default = import "../k8s/namespace.ncl"
         ,
     helm_string
         | String
@@ -64,10 +69,11 @@ let HelmChartName = std.contract.from_predicate(
                 namespace | force = ns,
 		chart = _chart,
 		values | force = helm_values,
+                ignore | force = [],
 		helm_string = "helm repo add %{release_name} %{_chart.repoUrl} && helm repo update && helm upgrade --install --namespace %{ns.name} --create-namespace %{release_name} %{release_name}/%{_chart.name}",
 		serialize | force = {
 		  "%{ns.name}/helm_%{name}.yml" = {
-			content = (std.serialize 'Yaml ((import "./argocd/helm.yml") & {
+			content = (std.serialize 'Yaml ((import "helm.yml") & {
 
 				metadata.name | force = name,
 				spec.destination.namespace | force = ns.name,

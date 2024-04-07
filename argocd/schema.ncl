@@ -18,6 +18,19 @@ let defaults = {
         | String
         | default = "main"
     },
+    IgnoreDifference = {
+      group
+        | String
+        ,
+      kind
+        | String
+        ,
+      name
+        | KubernetesSchema.KubernetesResourceName
+        ,
+      jsonPointers
+        | Array String
+    },
     Application = {
       name
        | KubernetesSchema.KubernetesResourceName
@@ -35,23 +48,14 @@ let defaults = {
       source
        | ArgoCdSchemas.Source
        ,
+      ignore
+       | Array ArgoCdSchemas.IgnoreDifference
+       | optional
+       ,
       serialize
        | Dyn
        | optional
     },
-    IgnoreDifferenceSchema = {
-      group
-        | String
-        ,
-      kind
-        | String
-        ,
-      name
-        | KubernetesSchema.KubernetesResourceName
-        ,
-      jsonPointers
-        | Array String
-    }
   },
 
 }
