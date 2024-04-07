@@ -40,19 +40,19 @@ let env_config = import "./env_config.ncl" in
     istio_base_chart = {
       name = "base",
       repoUrl = istioRepoURL,
-      version = istio_version
+      version = istioVersion
     } | HelmChartSchema,
 
     istiod_chart = {
       name = "istiod",
       repoUrl = istioRepoURL,
-      version = istio_version
+      version = istioVersion
     } | HelmChartSchema,
 
     istio_gateway_chart = {
       name = "gateway",
       repoUrl = istioRepoURL,
-      version = istio_version
+      version = istioVersion
     } | HelmChartSchema,
 
 
