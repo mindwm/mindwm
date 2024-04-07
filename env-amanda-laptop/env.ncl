@@ -4,6 +4,7 @@ let make_k8s_ns = (import "../k8s/namespace.ncl").make in
 let env_config = import "./env_config.ncl" in
 {
   env | not_exported = {
+    istioRepoURL = "https://istio-release.storage.googleapis.com/charts",
     natsUserRoot = {
       user = "root",
       password = "r00tpass"
@@ -33,6 +34,14 @@ let env_config = import "./env_config.ncl" in
       repoUrl = "https://charts.redpanda.com",
       version = "0.4.20"
     } | HelmChartSchema,
+
+    istio_base_chart = {
+      name = "base",
+      repoUrl = istioRepoURL,
+      version = "1.21.0"
+    } | HelmChartSchema,
+
+
 
     argocd = make_helm_release (make_k8s_ns "argocd") "argocd" argocd_chart {},
 
@@ -64,9 +73,13 @@ let env_config = import "./env_config.ncl" in
 
   	cert_manager = make_helm_release (make_k8s_ns "cert-manager") "cert-manager" cert_manager_chart {
 	  installCRDs = true
-	}
+	},
 
   	redpanda_operator = make_helm_release (make_k8s_ns "redpanda") "redpanda-operator" redpanda_operator_chart {}
+
+	istio_ns = make_k8s_ns "istio-system",
+
+  	istio_base = istio_ns "istio-base" istio_base_chart {},
 
 
     }
