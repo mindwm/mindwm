@@ -5,6 +5,8 @@ let env_config = import "./env_config.ncl" in
 {
   env | not_exported = {
     istioRepoURL = "https://istio-release.storage.googleapis.com/charts",
+    istioVersion = "1.21.0",
+
     natsUserRoot = {
       user = "root",
       password = "r00tpass"
@@ -38,13 +40,19 @@ let env_config = import "./env_config.ncl" in
     istio_base_chart = {
       name = "base",
       repoUrl = istioRepoURL,
-      version = "1.21.0"
+      version = istio_version
     } | HelmChartSchema,
 
     istiod_chart = {
       name = "istiod",
       repoUrl = istioRepoURL,
-      version = "1.21.0"
+      version = istio_version
+    } | HelmChartSchema,
+
+    istio_gateway_chart = {
+      name = "gateway",
+      repoUrl = istioRepoURL,
+      version = istio_version
     } | HelmChartSchema,
 
 
@@ -87,6 +95,10 @@ let env_config = import "./env_config.ncl" in
 
   	istio_base = make_helm_release istio_ns "istio-base" istio_base_chart {},
   	istiod = make_helm_release istio_ns "istiod" istiod_chart {},
+
+	istio_ingress_ns = make_k8s_ns "istio-ingress",
+
+  	istio_gateway = make_helm_release istio_ingress_ns "gateway" istio_gateway_chart {},
 
 
     }
