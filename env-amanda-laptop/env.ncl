@@ -41,6 +41,12 @@ let env_config = import "./env_config.ncl" in
       version = "1.21.0"
     } | HelmChartSchema,
 
+    istiod_chart = {
+      name = "istiod",
+      repoUrl = istioRepoURL,
+      version = "1.21.0"
+    } | HelmChartSchema,
+
 
 
     argocd = make_helm_release (make_k8s_ns "argocd") "argocd" argocd_chart {},
@@ -75,11 +81,12 @@ let env_config = import "./env_config.ncl" in
 	  installCRDs = true
 	},
 
-  	redpanda_operator = make_helm_release (make_k8s_ns "redpanda") "redpanda-operator" redpanda_operator_chart {}
+  	redpanda_operator = make_helm_release (make_k8s_ns "redpanda") "redpanda-operator" redpanda_operator_chart {},
 
 	istio_ns = make_k8s_ns "istio-system",
 
-  	istio_base = istio_ns "istio-base" istio_base_chart {},
+  	istio_base = make_helm_release istio_ns "istio-base" istio_base_chart {},
+  	istiod = make_helm_release istio_ns "istiod" istiod_chart {},
 
 
     }
