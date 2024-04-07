@@ -6,7 +6,7 @@ let HelmReleaseName = std.contract.from_predicate(
   fun value => std.string.is_match("^[a-z0-9][-a-z0-9]{0,%{maxReleaseNameLen}}$") value
 ) in
 let HelmReleaseVersion = std.contract.from_predicate(
-  fun value => std.string.is_match("^v\\d+\\.\\d+\\.\\d+$") value
+  fun value => std.string.is_match("^\\d+\\.\\d+\\.\\d+$") value
 ) in
 let HelmChartVersion = HelmReleaseVersion in
 let HelmChartName = std.contract.from_predicate(
@@ -73,7 +73,7 @@ let HelmChartName = std.contract.from_predicate(
 				spec.destination.namespace | force = ns.name,
 			 	spec.source.chart | force = _chart.name,
 				spec.source.repoURL | force = _chart.repoUrl,
-				spec.source.targetRevision = _chart.version,
+				spec.source.targetRevision | force = _chart.version,
 			 	spec.source.helm.releaseName | force = release_name,
 				spec.source.helm.valuesObject | force = helm_values,
 				spec.syncPolicy.syncOptions | force = [
