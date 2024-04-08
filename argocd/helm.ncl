@@ -84,7 +84,8 @@ let HelmChartName = std.contract.from_predicate(
 				spec.source.helm.valuesObject | force = helm_values,
 				spec.syncPolicy.syncOptions | force = [
 				   "CreateNamespace=" ++ std.to_string HelmReleaseOptionsSchema.create_namespace
-				]
+				],
+				spec.ignoreDifferences | force = ignore
 
 			}))
 		  }
