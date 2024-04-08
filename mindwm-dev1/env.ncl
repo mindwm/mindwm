@@ -1,5 +1,5 @@
-let make_helm_release = (import "../helm.ncl").make in
-let HelmChartSchema = (import "../helm.ncl").HelmChartSchema in
+let make_helm_release = (import "../argocd/helm.ncl").make in
+let HelmChartSchema = (import "../argocd/helm.ncl").HelmChartSchema in
 let make_k8s_ns = (import "../k8s/namespace.ncl").make in
 let env_config = import "./env_config.ncl" in
 {

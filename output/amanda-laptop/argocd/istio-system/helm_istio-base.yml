@@ -7,6 +7,7 @@ spec:
   destination:
     namespace: istio-system
     server: https://kubernetes.default.svc
+  ignoreDifferences: []
   project: default
   source:
     chart: base
@@ -19,9 +20,3 @@ spec:
     automated: {}
     syncOptions:
     - CreateNamespace=true
-  ignoreDifferences:
-    - group: admissionregistration.k8s.io
-      kind: ValidatingWebhookConfiguration
-      name: istiod-default-validator
-      jsonPointers:
-        - /webhooks/0/failurePolicy

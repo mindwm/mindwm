@@ -1,7 +1,9 @@
-let make_helm_release = (import "../helm.ncl").make in
-let HelmChartSchema = (import "../helm.ncl").HelmChartSchema in
+let make_helm_release = (import "../argocd/helm.ncl").make in
+let HelmChartSchema = (import "../argocd/helm.ncl").HelmChartSchema in
+let HelmReleaseSchema = (import "../argocd/helm.ncl").HelmReleaseSchema in
 let make_k8s_ns = (import "../k8s/namespace.ncl").make in
 let env_config = import "./env_config.ncl" in
+let ArgoCdSchemas = (import "../argocd/schema.ncl").ArgoCdSchemas in
 let argocd = import "../argocd/argocd.ncl" in
 {
   env | not_exported = {
@@ -11,7 +13,7 @@ let argocd = import "../argocd/argocd.ncl" in
     infraRepo = {
       repo = "https://github.com/metacoma/mindwm-laptop",
       path = "infrastructure/"
-    } | argocd.ArgoCdSchemas.Source,
+    } | ArgoCdSchemas.Source,
 
     natsUserRoot = {
       user = "root",
@@ -67,9 +69,8 @@ let argocd = import "../argocd/argocd.ncl" in
 
     resources = {
 	argocd_infra = argocd.make_app "infra" infraRepo,
-
 	nats_ns = make_k8s_ns "nats",
-  	nats = make_helm_release nats_ns "nats" nats_chart  {
+  	nats = make_helm_release nats_ns "nats" nats_chart {
 	   config = {
 	     jetstream.enabled = true,
 	     cluster."merge".name =  "nats-cluster",
@@ -100,7 +101,16 @@ let argocd = import "../argocd/argocd.ncl" in
 
 	istio_ns = make_k8s_ns "istio-system",
 
-  	istio_base = make_helm_release istio_ns "istio-base" istio_base_chart {},
+	istio_base = (make_helm_release istio_ns "istio-base" istio_base_chart {} & {
+	  ignore = [ ArgoCdSchemas.IgnoreDifference & {
+	      group | force = "admissionregistration.k8s.io",
+	      kind | force = "ValidatingWebhookConfiguration",
+	      name | force = "istiod-default-validator",
+	      jsonPointers = [ "/webhooks/0/failurePolicy" ] 
+	    }
+          ] 	
+	}) | HelmReleaseSchema,
+
   	istiod = make_helm_release istio_ns "istiod" istiod_chart {},
 
 	istio_ingress_ns = make_k8s_ns "istio-ingress",
@@ -125,7 +135,7 @@ create:
 delete:
 	k3d cluster delete %{env_config.name}
 argo_admin:
-	kubectl get secret -n %{env.argocd_release.namespace.name} argocd-initial-admin-secret -o jsonpath='{.data.password}'  |base64 -d;echo
+	kubectl get secret -n %{env.argocd_release.namespace.name} argocd-initial-admin-secret -o jsonpath="{.data.password}"  |base64 -d;echo
 argocd:
 	%{env.argocd_release.helm_string} --wait
 	"%

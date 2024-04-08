@@ -7,6 +7,7 @@ spec:
   destination:
     namespace: istio-system
     server: https://kubernetes.default.svc
+  ignoreDifferences: []
   project: default
   source:
     chart: istiod
